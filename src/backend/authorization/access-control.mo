@@ -21,7 +21,7 @@ module {
     };
   };
 
-  // First principal that calls this function becomes admin, all other principals become users.
+  // First principal that calls this function becomes admin, all others become users.
   public func initialize(state : AccessControlState, caller : Principal, adminToken : Text, userProvidedToken : Text) {
     if (caller.isAnonymous()) { return };
     switch (state.userRoles.get(caller)) {
@@ -37,13 +37,29 @@ module {
     };
   };
 
-  public func getUserRole(state : AccessControlState, caller : Principal) : UserRole {
+  // Register caller: first caller becomes admin, rest become users
+  public func register(state : AccessControlState, caller : Principal) : UserRole {
     if (caller.isAnonymous()) { return #guest };
     switch (state.userRoles.get(caller)) {
       case (?role) { role };
       case (null) {
-        Runtime.trap("User is not registered");
+        if (not state.adminAssigned) {
+          state.userRoles.add(caller, #admin);
+          state.adminAssigned := true;
+          #admin;
+        } else {
+          state.userRoles.add(caller, #user);
+          #user;
+        };
       };
+    };
+  };
+
+  public func getUserRole(state : AccessControlState, caller : Principal) : UserRole {
+    if (caller.isAnonymous()) { return #guest };
+    switch (state.userRoles.get(caller)) {
+      case (?role) { role };
+      case (null) { #guest };
     };
   };
 
@@ -62,6 +78,10 @@ module {
   };
 
   public func isAdmin(state : AccessControlState, caller : Principal) : Bool {
-    getUserRole(state, caller) == #admin;
+    if (caller.isAnonymous()) { return false };
+    switch (state.userRoles.get(caller)) {
+      case (?role) { role == #admin };
+      case (null) { false };
+    };
   };
 };

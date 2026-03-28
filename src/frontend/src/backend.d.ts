@@ -54,6 +54,7 @@ export interface backendInterface {
     getRestaurantInfo(): Promise<RestaurantInfo>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    registerCaller(): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateMenuItem(id: bigint, item: MenuItem): Promise<void>;
     updateReservationStatus(id: bigint, status: string): Promise<void>;

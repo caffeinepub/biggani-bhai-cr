@@ -54,6 +54,8 @@ export interface _SERVICE {
   'getRestaurantInfo' : ActorMethod<[], RestaurantInfo>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'registerCaller' : ActorMethod<[], string>,
+  'registerCaller' : ActorMethod<[], string>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateMenuItem' : ActorMethod<[bigint, MenuItem], undefined>,
   'updateReservationStatus' : ActorMethod<[bigint, string], undefined>,

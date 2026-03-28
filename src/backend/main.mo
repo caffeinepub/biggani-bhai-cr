@@ -46,7 +46,7 @@ actor {
     time : Text;
     guestCount : Nat;
     notes : Text;
-    status : Text; // pending/confirmed/cancelled
+    status : Text;
   };
 
   module Reservation {
@@ -67,32 +67,36 @@ actor {
   let reservations = Map.empty<Nat, Reservation>();
 
   var restaurantInfo : RestaurantInfo = {
-    name = "Default Restaurant";
-    address = "123 Main St";
-    phone = "123-456-7890";
-    email = "info@example.com";
-    openingHours = "Mon-Sun: 9am-10pm";
+    name = "Biggani Bhai C&R";
+    address = "বৈরাগী বাজার খশির, আব্দুল্লাহপুর";
+    phone = "01730564953";
+    email = "";
+    openingHours = "সকাল ৯টা - রাত ১১টা";
+  };
+
+  // Register caller: first caller becomes admin automatically
+  public shared ({ caller }) func registerCaller() : async Text {
+    let role = AccessControl.register(accessControlState, caller);
+    switch (role) {
+      case (#admin) { "admin" };
+      case (#user) { "user" };
+      case (#guest) { "guest" };
+    };
   };
 
   // User Profile Functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
-    };
     userProfiles.get(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own profile");
+      Runtime.trap("Unauthorized");
     };
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
     userProfiles.add(caller, profile);
   };
 

@@ -33,11 +33,11 @@ export function useRestaurantInfo() {
     queryFn: async () => {
       if (!actor) {
         return {
-          name: "Spice Garden",
-          email: "info@spicegarden.com",
-          address: "123 Food Street, Dhaka, Bangladesh",
-          openingHours: "12:00 PM - 11:00 PM",
-          phone: "+880 1700-000000",
+          name: "Biggani Bhai C&R",
+          email: "",
+          address: "বৈরাগী বাজার খশির, আব্দুল্লাহপুর",
+          openingHours: "সকাল ৯টা - রাত ১১টা",
+          phone: "01730564953",
         };
       }
       return actor.getRestaurantInfo();
@@ -52,6 +52,8 @@ export function useIsAdmin() {
     queryKey: ["isAdmin"],
     queryFn: async () => {
       if (!actor) return false;
+      // Register caller first (first caller becomes admin automatically)
+      await actor.registerCaller();
       return actor.isCallerAdmin();
     },
     enabled: !!actor && !isFetching,
